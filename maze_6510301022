@@ -1,0 +1,86 @@
+import os
+import time
+
+class maze:
+    def __init__(self) -> None:
+        self.maze = [
+            ["X", "X", "X", "X", "X", "X", "X"],
+            ["X", " ", " ", " ", "X", " ", "X"],
+            ["X", " ", "X", " ", "X", " ", " "],
+            ["X", " ", "X", " ", "X", " ", "X"],
+            ["X", " ", "X", " ", " ", " ", "X"],
+            ["X", " ", "X", "X", "X", "X", "X"],
+        ]
+        self.ply = pos(5, 1)
+        self.end = pos(2, 6)
+        self.maze[self.ply.y][self.ply.x] = "P"
+        self.maze[self.end.y][self.end.x] = "E"
+
+    def isInBound(self, y, x):
+        if 0 <= y < len(self.maze) and 0 <= x < len(self.maze[0]):
+            return True
+        else:
+            return False
+
+    def print(self):
+        os.system("cls")
+        print("\n\n\n")
+        for row in self.maze:
+            for col in row:
+                print(col, " ", end="")
+            print("")
+        print("\n\n\n")
+
+    def printEND(self):
+        os.system("cls")
+        print("\n\n\n")
+        print(">>>>> Congratulation!!! <<<<<")
+        print("\n\n\n")
+        keyboard.wait("")
+
+    def move(self, next_move):
+        self.maze[self.ply.y][self.ply.x] = " "
+        self.maze[next_move.y][next_move.x] = "P"
+        self.ply = next_move
+        time.sleep(0.25)
+
+    def dfs(self, current):
+        if current.y == self.end.y and current.x == self.end.x:
+            self.printEND()
+            return True
+
+        for direction in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+            next_move = pos(current.y + direction[0], current.x + direction[1])
+
+            if (
+                self.isInBound(next_move.y, next_move.x)
+                and self.maze[next_move.y][next_move.x] == " "
+            ):
+                self.move(next_move)
+                self.print()
+
+                if self.dfs(next_move):
+                    return True
+
+    def calculate_next_move(self, direction):
+        if direction == "up":
+            return pos(self.ply.y - 1, self.ply.x)
+        elif direction == "down":
+             return pos(self.ply.y + 1, self.ply.x)
+        elif direction == "left":
+            return pos(self.ply.y, self.ply.x - 1)
+        elif direction == "right":
+            return pos(self.ply.y, self.ply.x + 1)
+
+        return False
+    
+class pos:
+    def __init__(self, y, x) -> None:
+        self.y = y
+        self.x = x
+        
+if __name__ == '__main__':
+    m = maze()
+    m.print()
+
+    m.dfs(m.ply)
